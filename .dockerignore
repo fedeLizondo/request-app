@@ -1,0 +1,10 @@
+# Ignorar la carpeta de git
+.git
+# Ignorar los archivos de caché de Python
+__pycache__
+*.pyc
+# Ignorar los entornos virtuales locales
+venv
+# Ignorar archivos de configuración del editor
+.vscode
+.idea
