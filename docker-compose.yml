@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  python-app:
+    build:
+      context: .  # Ruta donde está tu Dockerfile y código de la app Python
+      dockerfile: Dockerfile          # Dockerfile para la app Python
+    image: python-request-app          # Nombre de la imagen
+    ports:
+      - '8000:8000'                    # Puerto expuesto por la app Python
+    environment:
+      - ENV_KAFKA_URL=kafka
+      - ENV_KAFKA_PORT=9092      # URL de Kafka
+    volumes:
+      - '.:/app'    # Montar la carpeta de la app
+    networks:
+      - kafka-network                   # Usar una red específica
+    depends_on:
+      - kafka                           # La app depende de Kafka
+  kafka:
+    image: 'bitnami/kafka:3.5.0'
+    container_name: test2-mq
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    ports:
+      - '9092:9092'                    # Exponer el puerto de Kafka
+      - '3040:3040'
+    networks:
+      - kafka-network                   # Usar la misma red
+
+networks:
+  kafka-network:
+    driver: bridge

@@ -4,6 +4,7 @@ from faststream.kafka import KafkaBroker
 import asyncio
 from dotenv import load_dotenv
 import os
+import time
 
 
 async def main():
@@ -60,7 +61,7 @@ Content-Length: 45
     kafka = kafka_url + ":" + kafka_port
     print("kaftka is [" + kafka+"]")
 
-    broker = KafkaBroker()
+    broker = KafkaBroker(kafka)
     app = FastStream(broker)
 
     @broker.subscriber("test")
@@ -75,4 +76,5 @@ Content-Length: 45
 
 if __name__ == "__main__":
     load_dotenv()
+    time.sleep(30)
     asyncio.run(main())
